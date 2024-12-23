@@ -1,26 +1,34 @@
-import os
+"""Script to generate educational podcasts from input content and concepts.
+
+Usage:
+    poetry run python -m main.py splk-1002-pt6
+"""
+
 import sys
 
-from podcastfy.client import generate_podcast
+from podcastfy.client import generate_podcast  # type: ignore
 
 
-def load_concepts(input_name):
-    concepts_file = f"inputs/{input_name}/concepts"
-    with open(concepts_file, "r") as f:
+def load_concepts(input_dir):
+    """Load concepts from the input directory's concepts file."""
+    concepts_file = f"inputs/{input_dir}/concepts"
+    with open(concepts_file, "r", encoding="utf-8") as f:
         return [line.strip() for line in f.readlines()]
 
 
-def load_content(input_name):
-    content_file = f"inputs/{input_name}/content"
-    with open(content_file, "r") as f:
+def load_content(input_dir):
+    """Load content from the input directory's content file."""
+    content_file = f"inputs/{input_dir}/content"
+    with open(content_file, "r", encoding="utf-8") as f:
         return f.read()
 
 
-def create_dialogue_structure(concepts):
+def create_dialogue_structure(concept_list):
+    """Create a dialogue structure based on the provided concepts."""
     structure = ["Introduce List of concepts"]
 
     # Add short introductions
-    for concept in concepts:
+    for concept in concept_list:
         structure.append(f"explanation of {concept}")
 
     structure.append("Closing Remarks")
