@@ -1,13 +1,12 @@
 [tool.poetry]
-name = "podcastify-playing"
-version = "0.1.0"
-description = ""
-authors = ["Konrad Zagozda <kzagozda@splunk.com>"]
-readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 matplotlib = "^3.10.0"
+podcastfy = "^0.4.1"
+ffmpeg = "^1.4"
+ffmpeg-downloader = "^0.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
