@@ -1,0 +1,6 @@
+Summarize, be concise, focus on what is important for a learner don’t dive deep into details and edge cases (max 4000 characters but try to be as concise as possible)
+If content contains optional parameters, only include most important, popular and used optional parameters 
+If content contains required parameters, mention all of then, but use common sense wheter to describe all in detail or not
+If content contains examples, include max 2 of examples, the simplest and most popular ones
+Avoid going too much into details, make it begginer friendly
+Breadth over depth, focus on the most important concepts and ideas, don't dive into details and edge cases
