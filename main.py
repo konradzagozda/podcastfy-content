@@ -6,6 +6,8 @@ Usage:
 
 # pylint: disable=import-error
 import argparse
+import os
+from pathlib import Path
 
 from podcastfy.client import generate_podcast  # type: ignore
 
@@ -40,6 +42,26 @@ def parse_arguments():
         help="Duration of the podcast in minutes (2, 3, 5, or 7)",
     )
     return parser.parse_args()
+
+
+def rename_transcript(original_path, model_name, input_name):
+    """Rename transcript file to the desired format."""
+    if not original_path:
+        return None
+
+    # Extract the ID from the original filename
+    file_id = Path(original_path).stem.split("_")[-1]
+
+    # Create new filename
+    new_filename = f"transcript_{model_name}_{input_name}_{file_id}.txt"
+    new_path = os.path.join(os.path.dirname(original_path), new_filename)
+
+    # Rename the file
+    try:
+        os.rename(original_path, new_path)
+        return new_path
+    except OSError:
+        return original_path
 
 
 # Parse command line arguments
@@ -85,16 +107,37 @@ config = {
 
 print(config)
 
-# transcript_file = generate_podcast(
-#     text=raw_text,
+# Generate transcript with o1-mini model
+transcript_file_o1 = generate_podcast(
+    text=raw_text,
+    conversation_config=config,
+    transcript_only=True,
+    llm_model_name="o1-mini",
+    api_key_label="OPENAI_API_KEY",
+)
+transcript_file_o1 = rename_transcript(transcript_file_o1, "o1-mini", args.input_name)
+
+# Generate transcript with default model (gemini)
+transcript_file_default = generate_podcast(
+    text=raw_text,
+    conversation_config=config,
+    transcript_only=True,
+    llm_model_name="gemini-exp-1206",
+)
+transcript_file_default = rename_transcript(
+    transcript_file_default, "gemini", args.input_name
+)
+
+# # Generate audio using the o1-mini transcript
+# audio_file_from_transcript_o1 = generate_podcast(
+#     transcript_file=transcript_file_o1,
 #     conversation_config=config,
-#     transcript_only=True,
-#     llm_model_name="o1-mini",
-#     api_key_label="OPENAI_API_KEY",
+#     tts_model="elevenlabs",
 # )
 
-# audio_file_from_transcript = generate_podcast(
-#     transcript_file=transcript_file,
+# # Generate audio using the default transcript
+# audio_file_from_transcript_default = generate_podcast(
+#     transcript_file=transcript_file_default,
 #     conversation_config=config,
 #     tts_model="elevenlabs",
 # )

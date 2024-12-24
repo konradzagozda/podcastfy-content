@@ -2,3 +2,11 @@ Avoid code snippets in examples, instead make examples high level, simple and il
 Make Introduction and Conclusion, GoodBye part as concise as possible
 Clarity is most important, make it as clear as possible, and understandable as possible
 Breadth over depth, focus on the most important concepts and ideas, don't dive into details and edge cases
+Avoid going too much into details, It should be general overview not a deep dive
+Make it ideal for candidate for Splunk power user splk-1002 certificate  
+Breadth over depth, focus on the most important concepts and ideas, don't dive into details and edge cases
+Do not include any URLS or other extra sources
+Do not include code examples, instead use natural language to explain concepts
+Make language simple to understand don’t be fancy with words, don't overuse "precisely" or "exactly"
+Do not use emojis
+Do not talk about advanced examples or edge cases
