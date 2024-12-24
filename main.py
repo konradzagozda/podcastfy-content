@@ -16,6 +16,15 @@ def load_content(input_file):
         return f.read()
 
 
+def load_user_instructions():
+    """Load user instructions from the prompts file."""
+    try:
+        with open("prompts/user-instructions", "r", encoding="utf-8") as f:
+            return f.read().strip().replace("\n", " ; ")
+    except FileNotFoundError:
+        return "Ensure clarity in explanations"  # Default if file not found
+
+
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
@@ -64,7 +73,7 @@ config = {
     ],
     "podcast_name": f"Splunk Core Certified Power User - {args.concept_name}",
     "output_language": "English",
-    "user_instructions": "Ensure clarity in explanations",
+    "user_instructions": load_user_instructions(),
     "engagement_techniques": [
         "Analogies",
         "Real-world Examples",
