@@ -1,7 +1,9 @@
 """Script to generate educational podcasts from input content and concepts.
 
 Usage:
-    poetry run python -m main.py splk-1002-pt1 "Field Extractor" --duration 3
+    poetry run python main.py field-extractor "Field Extractor" --duration 3
+    poetry run python main.py field-extractor "Field Extractor" --duration 3 --from-transcript
+    poetry run python main.py field-extractor "Field Extractor" --duration 3 --transcript-only
 """
 
 # pylint: disable=import-error
@@ -40,6 +42,16 @@ def parse_arguments():
         type=int,
         choices=[2, 3, 5, 7],
         help="Duration of the podcast in minutes (2, 3, 5, or 7)",
+    )
+    parser.add_argument(
+        "--from-transcript",
+        action="store_true",
+        help="Use existing transcript instead of generating a new one",
+    )
+    parser.add_argument(
+        "--transcript-only",
+        action="store_true",
+        help="Only generate/use transcript, skip audio generation",
     )
     return parser.parse_args()
 
@@ -107,37 +119,39 @@ config = {
 
 print(config)
 
-# Generate transcript with o1-mini model
-transcript_file_o1 = generate_podcast(
-    text=raw_text,
-    conversation_config=config,
-    transcript_only=True,
-    llm_model_name="o1-mini",
-    api_key_label="OPENAI_API_KEY",
-)
-transcript_file_o1 = rename_transcript(transcript_file_o1, "o1-mini", args.input_name)
+# Generate transcript with o1-mini model or use existing one
+transcript_file_o1 = None
+if args.from_transcript:
+    # Try to find existing transcript
+    transcript_path = f"data/transcripts/transcript_o1-mini_{args.input_name}_"
+    matching_files = [
+        f
+        for f in os.listdir("data/transcripts")
+        if f.startswith(os.path.basename(transcript_path))
+    ]
+    if matching_files:
+        transcript_file_o1 = os.path.join("data/transcripts", matching_files[0])
+    else:
+        print(f"No existing transcript found matching pattern: {transcript_path}*")
+        exit(1)
+else:
+    # Generate new transcript
+    transcript_file_o1 = generate_podcast(
+        text=raw_text,
+        conversation_config=config,
+        transcript_only=True,
+        llm_model_name="o1-mini",
+        api_key_label="OPENAI_API_KEY",
+    )
+    transcript_file_o1 = rename_transcript(
+        transcript_file_o1, "o1-mini", args.input_name
+    )
 
-# Generate transcript with default model (gemini)
-transcript_file_default = generate_podcast(
-    text=raw_text,
-    conversation_config=config,
-    transcript_only=True,
-    llm_model_name="gemini-exp-1206",
-)
-transcript_file_default = rename_transcript(
-    transcript_file_default, "gemini", args.input_name
-)
 
-# # Generate audio using the o1-mini transcript
-# audio_file_from_transcript_o1 = generate_podcast(
-#     transcript_file=transcript_file_o1,
-#     conversation_config=config,
-#     tts_model="elevenlabs",
-# )
-
-# # Generate audio using the default transcript
-# audio_file_from_transcript_default = generate_podcast(
-#     transcript_file=transcript_file_default,
-#     conversation_config=config,
-#     tts_model="elevenlabs",
-# )
+# Generate audio using the o1-mini transcript if not transcript-only
+if not args.transcript_only:
+    audio_file_from_transcript_o1 = generate_podcast(
+        transcript_file=transcript_file_o1,
+        conversation_config=config,
+        tts_model="elevenlabs",
+    )
